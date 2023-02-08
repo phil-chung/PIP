@@ -84,9 +84,9 @@ class PIP(torch.nn.Module):
         """
         self.dynamics_optimizer.reset_states()
         init_pose = init_pose.view(1, 24, 3, 3)
-        init_pose[0, 0] = torch.eye(3)
-        lj_init = self.forward_kinematics(init_pose)[1][0, joint_set.leaf].view(-1)
-        jvel_init = torch.zeros(24 * 3)
+        init_pose[0, 0] = torch.eye(3) #生成3*3的单位矩阵
+        lj_init = self.forward_kinematics(init_pose)[1][0, joint_set.leaf].view(-1) #joint_set是除了腰外的五个节点，leaf joint initial
+        jvel_init = torch.zeros(24 * 3)# joint velocity initial
         x = (normalize_and_concat(glb_acc, glb_rot), lj_init, jvel_init)
         leaf_joint, full_joint, global_6d_pose, joint_velocity, contact = [_[0] for _ in self.forward([x])]
         pose = self._reduced_glb_6d_to_full_local_mat(glb_rot.view(-1, 6, 3, 3)[:, -1], global_6d_pose)
